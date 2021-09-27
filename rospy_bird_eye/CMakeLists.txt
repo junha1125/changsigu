@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(rospy_tutorials)
+project(rospy_bird_eye)
 
 find_package(catkin REQUIRED COMPONENTS message_generation std_msgs)
 
 add_message_files(DIRECTORY msg FILES Floats.msg HeaderString.msg)
-add_service_files(DIRECTORY srv FILES AddTwoInts.srv BadTwoInts.srv)
 
 generate_messages(DEPENDENCIES std_msgs)
 

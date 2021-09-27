@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-import roslib
-roslib.load_manifest('my_package')
+#import roslib
+#roslib.load_manifest('my_package')
 import sys
 import rospy
 import cv2
@@ -13,30 +13,24 @@ from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 
 class image_converter:
-
   def __init__(self):
-    self.steering_pub = rospy.Publisher("steering",Float32)
-    self.velocity_pub = rospy.Publisher("velocity",Float32)
-    self.steering = float() # Float32(data=0) 
-    self.velocity = float() # Float32(data=0) 
+    self.steering_pub = rospy.Publisher("steering",Float32, queue_size=10)
+    self.velocity_pub = rospy.Publisher("velocity",Float32, queue_size=10)
+    self.steering = Float32(data=0)  #float() # Float32(data=0) 
+    self.velocity = Float32(data=0) #float() # Float32(data=0) 
 
     self.bridge = CvBridge()
     self.img0 = 0
     self.img1 = 0
     self.img2 = 0
     self.img3 = 0
-    self.image_sub0 = rospy.Subscriber("image_topic",Image,self.callback0)
-    self.image_sub1 = rospy.Subscriber("image_topic",Image,self.callback1)
-    self.image_sub2 = rospy.Subscriber("image_topic",Image,self.callback2)
-    self.image_sub3 = rospy.Subscriber("image_topic",Image,self.callback3)
-
-    self.main_calculator()
-    self.publish_drive()
+    self.image_sub0 = rospy.Subscriber("/camera1/usb_cam1/image_raw",Image,self.callback0)
+    self.image_sub1 = rospy.Subscriber("/camera2/usb_cam2/image_raw",Image,self.callback1)
+    self.image_sub2 = rospy.Subscriber("/camera3/usb_cam3/image_raw",Image,self.callback2)
+    self.image_sub3 = rospy.Subscriber("/camera4/usb_cam4/image_raw",Image,self.callback3)
 
   def main_calculator(self):
     self.img0, self.img1, self.img2, self.img3
-    self.steering = 0.0 # self.steering.data
-    self.velocity = 0.0 # self.steering.data
     pass
 
   def publish_drive(self):
@@ -73,8 +67,8 @@ class image_converter:
 
 
 def main(args):
-  ic = image_converter()
   rospy.init_node('listener', anonymous=True)
+  ic = image_converter()
   try:
     rospy.spin()
   except KeyboardInterrupt:
