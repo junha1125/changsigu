@@ -30,8 +30,35 @@ class image_converter:
     self.image_sub3 = rospy.Subscriber("/camera4/usb_cam4/image_raw",Image,self.callback3)
 
   def main_calculator(self):
-    self.img0, self.img1, self.img2, self.img3
+    # self.img0, self.img1, self.img2, self.img3
+    #print(self.img0.shape, self.img1.shape, self.img2.shape, self.img3.shape)
+    img0_bev = self.bev_generation(self.img0)
+    img1_bev = self.bev_generation(self.img1)
+    img2_bev = self.bev_generation(self.img2)
+    img3_bev = self.bev_generation(self.img3)
+    # print(img0_bev.shape)
+    bev_image = np.zeros((1696,1696,3))
+    bev_image[0:448, 448:1248, :] = img0_bev # top
+    bev_image[1248:1696, 448:1248, :] = np.flip(img1_bev,0) # down // np.flip(img, 0) 
+    bev_image[448:1248, 1248:1696, :] = np.rot90(img2_bev,1) # right
+    bev_image[448:1248, 0:448, :] = np.flip(np.rot90(img3_bev,1),0) # left
+    cv2.imwrite('/home/jetson/Pictures/results/bev_img.jpeg', bev_image)
+
+    #cv2.imshow('final', bev_image)
+    #cv2.waitKey(1)
     pass
+
+  def bev_generation(self, data):
+    height, width = data.shape[0],data.shape[1]
+
+    src = np.float32([[100,0], [700,0], [0,height], [width,height]])
+    dst = np.float32([[0,0], [width,0], [0,height], [width,height]])
+    M = cv2.getPerspectiveTransform(src, dst)
+
+    data = data[0:height,0:width]
+    warped_img = cv2.warpPerspective(data, M, (width, height))
+
+    return warped_img
 
   def publish_drive(self):
     try:
@@ -61,6 +88,7 @@ class image_converter:
   def callback3(self,data):
     try:
       self.img3 = self.bridge.imgmsg_to_cv2(data, desired_encoding="rgb8")
+      self.main_calculator()
     except CvBridgeError as e:
       print(e)
   
