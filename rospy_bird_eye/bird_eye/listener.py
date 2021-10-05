@@ -24,10 +24,12 @@ class image_converter:
     self.img1 = 0
     self.img2 = 0
     self.img3 = 0
+    self.encoder = 0
     self.image_sub0 = rospy.Subscriber("/camera1/usb_cam1/image_raw",Image,self.callback0)
     self.image_sub1 = rospy.Subscriber("/camera2/usb_cam2/image_raw",Image,self.callback1)
     self.image_sub2 = rospy.Subscriber("/camera3/usb_cam3/image_raw",Image,self.callback2)
-    self.image_sub3 = rospy.Subscriber("/camera4/usb_cam4/image_raw",Image,self.callback3)
+    self.encoder_sub = rospy.Subscriber("/topic name",Topic_type, self.callback3)
+    self.image_sub3 = rospy.Subscriber("/camera4/usb_cam4/image_raw",Image,self.callback4)
 
   def main_calculator(self):
     # self.img0, self.img1, self.img2, self.img3
@@ -87,8 +89,16 @@ class image_converter:
 
   def callback3(self,data):
     try:
+      self.encoder = data.data
+    except CvBridgeError as e:
+      print(e)
+
+  def callback4(self,data):
+    try:
       self.img3 = self.bridge.imgmsg_to_cv2(data, desired_encoding="rgb8")
       self.main_calculator()
+      # self.publish_drive()
+
     except CvBridgeError as e:
       print(e)
   
