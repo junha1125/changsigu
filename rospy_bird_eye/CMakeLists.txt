@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.0.2)
 project(rospy_bird_eye)
 
 find_package(catkin REQUIRED COMPONENTS message_generation std_msgs)
+catkin_python_setup()
 
-add_message_files(DIRECTORY msg FILES Floats.msg HeaderString.msg)
+add_message_files(DIRECTORY msg FILES Floats.msg HeaderString.msg Encoder.msg TotalControl.msg)
 
 generate_messages(DEPENDENCIES std_msgs)
 
@@ -20,3 +21,4 @@ install(FILES
   bird_eye/talker_listener.launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/bird_eye
 )
+#/home/jetson/catkin_ws/src/rospy_bird_eye/bird_eye/listener.py
